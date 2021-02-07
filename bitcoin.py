@@ -43,7 +43,7 @@ if file_exists:
     f.write(str(getBitcoinPrice()))
     ObjRead.close()
 else:
-    print ("price file not found")
+    #print ("price file not found")
     f = open(CURR_DIR + "previousprice", "w")
     f.write(str(getBitcoinPrice()))
     PREVIOUS_PRICE = str(getBitcoinPrice())
