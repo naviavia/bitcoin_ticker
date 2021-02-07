@@ -1,4 +1,6 @@
 # /usr/bin/python3
+# bitcoin_ticker v1.0
+# Naviavia - https://github.com/naviavia/bitcoin_ticker
 
 import requests
 import json
@@ -12,13 +14,15 @@ import datetime
 
 inky_display = InkyPHAT("red")
 inky_display.set_border(inky_display.WHITE)
-inky_display.h_flip = True
-inky_display.v_flip = True
+
+# Parsing flip arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--flip', '-n', type=str, help="true = screen is flipped")
+args, _ = parser.parse_known_args()
 
 #Variables
 CURR_DIR = os.path.dirname(os.path.realpath(__file__)) + "/"
 RESOURCES = CURR_DIR + "resources/"
-ICON = "None"
 TIME = datetime.datetime.now()
 COURIER_FONT = RESOURCES + "fonts/Courierprime.ttf"
     
@@ -52,33 +56,23 @@ else:
 BITCOINPRICE = float(getBitcoinPrice())
 NUMBER_WITH_COMMAS = "{:,}".format(BITCOINPRICE)
 
-#Compare current and previous prices
-if (float(BITCOINPRICE) >= float(PREVIOUS_PRICE)):
-   ISHIGHER = 1
-   ICON = RESOURCES + "icon-up.png"
-else:
-   ISHIGHER = 0
-   ICON = RESOURCES + "icon-down.png"
+#Flip screen is true arguement passed
+if str(args) == "Namespace(flip='true')":
+    inky_display.h_flip = True
+    inky_display.v_flip = True
 
 # get BTC logo
 BTCLOGO = RESOURCES + "btc.png"
 btcimg = Image.open(BTCLOGO)
 
-# TEST OUTPUT
-#print ("The current price is: ", NUMBER_WITH_COMMAS)
-#print ("The previous price was: ", PREVIOUS_PRICE)
-#print("Original price:")
-#print(BITCOINPRICE)
-#print("With commas:")
-#print(NUMBER_WITH_COMMAS)
-#print(COURIER_FONT)
-
-#Building price to display
-if ISHIGHER == 1:
+#Compare current and previous prices & build price to display
+if (float(BITCOINPRICE) >= float(PREVIOUS_PRICE)):
     BITCOINPRICE = "$" + NUMBER_WITH_COMMAS
+    ICON = RESOURCES + "icon-up.png"
     iconimg = Image.open(ICON)
 else:
     BITCOINPRICE = "$" + NUMBER_WITH_COMMAS
+    ICON = RESOURCES + "icon-down.png"
     iconimg = Image.open(ICON)
 
 # Create a new canvas to draw on

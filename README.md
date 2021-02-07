@@ -29,3 +29,10 @@ crontab -e
 */5 * * * * python3 /home/pi/bitcoin_ticker/bitcoin.py
 ```
 Make sure the above path is pointing to the folder you've downloaded the code to
+
+## Config
+- To flip the display add the below argument;
+
+```
+--flip true
+```
