@@ -88,7 +88,7 @@ font3 = ImageFont.truetype(COURIER_FONT, 24)
 img.paste(btcimg, (25, 0)) 
 img.paste(iconimg, (150, 7))
 draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
-draw.text((37.5, 90), TIME.strftime('%Y-%m-%d %H:%M:%S'), inky_display.BLACK, font=font2)
+draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
 message = BITCOINPRICE
 w, h = font.getsize(message)
 x = (inky_display.WIDTH / 2) - (w / 2)
