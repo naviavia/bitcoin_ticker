@@ -4,6 +4,8 @@ The bitcoin ticker has been configured with the Bitstamp BTC API, and refreshes 
 ## Table of contents
 * [Requirements](#requirements)
 * [Setup](#setup)
+* [Config](#config)
+
 
 ## Requirements
 - Raspberry Pi
