@@ -16,9 +16,9 @@ The bitcoin ticker has been configured with the Bitstamp BTC API, and refreshes 
 curl https://get.pimoroni.com/inky | bash
 ```
 - Reboot the Pi
-- Download the bitcoin_ticker code to any directory
+- Download the bitcoin_ticker code to any your home directory
 ```
-https://github.com/naviavia/bitcoin_ticker.git
+git clone https://github.com/naviavia/bitcoin_ticker.git
 ```
 - Edit cron jobs
 ```
@@ -28,3 +28,4 @@ crontab -e
 ```
 */5 * * * * python3 /home/pi/bitcoin_ticker/bitcoin.py
 ```
+Make sure the above path is pointing to the folder you've downloaded the code to
