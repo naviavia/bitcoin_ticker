@@ -46,6 +46,7 @@ else:
     print ("price file not found")
     f = open(CURR_DIR + "previousprice", "w")
     f.write(str(getBitcoinPrice()))
+    PREVIOUS_PRICE = str(getBitcoinPrice())
 
 # Get price and format
 BITCOINPRICE = float(getBitcoinPrice())
