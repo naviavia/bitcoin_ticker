@@ -31,12 +31,32 @@ def getBitcoinPrice():
     URL = "https://www.bitstamp.net/api/ticker/"
     try:
         r = requests.get(URL)
-        priceFloat = float(json.loads(r.text)["last"])
-        return priceFloat
+        lastpriceFloat = float(json.loads(r.text)["last"])
+        return lastpriceFloat
         print(response.status_code)
     except requests.ConnectionError:
-        print("API - ERROR")
-        
+       print("API - ERROR")
+       
+def getBitcoinPrice24Low():
+    URL = "https://www.bitstamp.net/api/ticker/"
+    try:
+        r = requests.get(URL)
+        lastpriceFloat = float(json.loads(r.text)["last"])
+        lowpriceFloat = float(json.loads(r.text)["low"])
+        return lowpriceFloat
+        print(response.status_code)
+    except requests.ConnectionError:
+       print("API - ERROR")
+
+#Calculate the 24hour percentage change
+def percent(a, b) : 
+    result = int(((b - a) * 100) / a) 
+    return result 
+  
+if __name__ == "__main__" : 
+    a, b = float(getBitcoinPrice24Low()),float(getBitcoinPrice())
+    PERCENTAGE = percent(a, b)
+      
 #Check for file, if it doesn't exist create, otherwise read file
 file_exists = os.path.isfile(CURR_DIR + "/" + "previousprice")
 
@@ -88,13 +108,11 @@ font3 = ImageFont.truetype(COURIER_FONT, 24)
 img.paste(btcimg, (25, 0)) 
 img.paste(iconimg, (150, 7))
 draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
+draw.text((80, 33), str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
+draw.text((20, 45), str(BITCOINPRICE), inky_display.RED, font=font)
 draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
-message = BITCOINPRICE
-w, h = font.getsize(message)
-x = (inky_display.WIDTH / 2) - (w / 2)
-y = (inky_display.HEIGHT / 1.5) - (h / 1.5)
+
 
 # Display the text
-draw.text((x, y), message, inky_display.RED, font)
 inky_display.set_image(img)
 inky_display.show()
