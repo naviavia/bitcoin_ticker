@@ -25,10 +25,12 @@ CURR_DIR = os.path.dirname(os.path.realpath(__file__)) + "/"
 RESOURCES = CURR_DIR + "resources/"
 TIME = datetime.datetime.now()
 COURIER_FONT = RESOURCES + "fonts/Courierprime.ttf"
+COIN = "btcusdc"
+CURRENCYSYMBOL = "$"
     
 # Get bitcoin price from bitstamp API
 def getBitcoinPrice():
-    URL = "https://www.bitstamp.net/api/ticker/"
+    URL = "https://www.bitstamp.net/api/v2/ticker/" + COIN + "/"
     try:
         r = requests.get(URL)
         lastpriceFloat = float(json.loads(r.text)["last"])
@@ -38,12 +40,11 @@ def getBitcoinPrice():
        print("API - ERROR")
        
 def getBitcoinPrice24Low():
-    URL = "https://www.bitstamp.net/api/ticker/"
+    URL = "https://www.bitstamp.net/api/v2/ticker/" + COIN + "/"
     try:
         r = requests.get(URL)
-        lastpriceFloat = float(json.loads(r.text)["last"])
-        lowpriceFloat = float(json.loads(r.text)["low"])
-        return lowpriceFloat
+        openpriceFloat = float(json.loads(r.text)["open"])
+        return openpriceFloat
         print(response.status_code)
     except requests.ConnectionError:
        print("API - ERROR")
@@ -87,13 +88,16 @@ btcimg = Image.open(BTCLOGO)
 
 #Compare current and previous prices & build price to display
 if (float(BITCOINPRICE) >= float(PREVIOUS_PRICE)):
-    BITCOINPRICE = "$" + NUMBER_WITH_COMMAS
+    BITCOINPRICE = CURRENCYSYMBOL + NUMBER_WITH_COMMAS
     ICON = RESOURCES + "icon-up.png"
     iconimg = Image.open(ICON)
 else:
     BITCOINPRICE = "$" + NUMBER_WITH_COMMAS
     ICON = RESOURCES + "icon-down.png"
     iconimg = Image.open(ICON)
+
+print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
+print("The current price is " + str(CURRENCYSYMBOL) + str(NUMBER_WITH_COMMAS))
 
 # Create a new canvas to draw on
 img = Image.open(RESOURCES + "backdrop.png").resize(inky_display.resolution)
