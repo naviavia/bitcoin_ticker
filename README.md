@@ -1,5 +1,5 @@
 # bitcoin_ticker
-The bitcoin ticker has been configured with the Bitstamp BTC API, and refreshes the screen based on a CRON job.
+The bitcoin ticker has been configured with the Kraken API, and refreshes the screen based on a CRON job.
 
 ## Table of contents
 * [Requirements](#requirements)
@@ -37,4 +37,10 @@ Make sure the above path is pointing to the folder you've downloaded the code to
 
 ```
 --flip true
+```
+
+- To use an alternative Coin/Currency enter the pair & currency below e.g. ADA - GBP. This is based on available pairs on Kraken.
+
+```
+--pair adagbp
 ```
