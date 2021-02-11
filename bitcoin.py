@@ -1,5 +1,5 @@
 # /usr/bin/python3
-# bitcoin_ticker v1.0
+# bitcoin_ticker v1.1
 # Naviavia - https://github.com/naviavia/bitcoin_ticker
 
 import requests
@@ -17,7 +17,8 @@ inky_display.set_border(inky_display.WHITE)
 
 # Parsing flip arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--flip', '-n', type=str, help="true = screen is flipped")
+parser.add_argument('--flip', '-f', type=str, help="true = screen is flipped")
+parser.add_argument('--pair', '-p', type=str, help="enter currency pair")
 args, _ = parser.parse_known_args()
 
 #Variables
@@ -25,29 +26,46 @@ CURR_DIR = os.path.dirname(os.path.realpath(__file__)) + "/"
 RESOURCES = CURR_DIR + "resources/"
 TIME = datetime.datetime.now()
 COURIER_FONT = RESOURCES + "fonts/Courierprime.ttf"
-COIN = "btcusdc"
-CURRENCYSYMBOL = "$"
+API_ENDPOINT = "https://api.kraken.com/0/public/Ticker"
+COIN = "XXBTZUSD"
+CURRENCYEXTRACT = "USD"
+
+#If currency pair is entered extract info
+if args.pair is not None:
+    COIN = str.upper(args.pair)
+    CURRENCYEXTRACT = str.upper(args.pair)[-3:]
     
-# Get bitcoin price from bitstamp API
-def getBitcoinPrice():
-    URL = "https://www.bitstamp.net/api/v2/ticker/" + COIN + "/"
+#Select currency based on currency pair input
+if CURRENCYEXTRACT == "GBP":
+    CURRENCYSYMBOL = "£"
+elif CURRENCYEXTRACT == "USD":
+    CURRENCYSYMBOL = "$"
+elif CURRENCYEXTRACT == "EUR":
+    CURRENCYSYMBOL = "€"
+
+# Get current COIN price from Kraken API
+def getCoinPrice():
+    TICKER = API_ENDPOINT + "?pair=" + COIN
     try:
-        r = requests.get(URL)
-        lastpriceFloat = float(json.loads(r.text)["last"])
-        return lastpriceFloat
-        print(response.status_code)
+        r = requests.get(TICKER)
+        json_data = r.text
+        fj = json.loads(json_data)
+        lastpriceFloat = fj["result"][COIN]["c"][0]
+        return float(lastpriceFloat)
     except requests.ConnectionError:
-       print("API - ERROR")
-       
-def getBitcoinPrice24Low():
-    URL = "https://www.bitstamp.net/api/v2/ticker/" + COIN + "/"
+        print("API - ERROR")
+    
+# Get low COIN price from Kraken API
+def getCoinPriceLow():
+    TICKER = API_ENDPOINT + "?pair=" + COIN
     try:
-        r = requests.get(URL)
-        openpriceFloat = float(json.loads(r.text)["open"])
-        return openpriceFloat
-        print(response.status_code)
+        r = requests.get(TICKER)
+        json_data = r.text
+        fj = json.loads(json_data)
+        lastpriceFloat = fj["result"][COIN]["l"][0]
+        return float(lastpriceFloat)
     except requests.ConnectionError:
-       print("API - ERROR")
+        print("API - ERROR")
 
 #Calculate the 24hour percentage change
 def percent(a, b) : 
@@ -55,7 +73,7 @@ def percent(a, b) :
     return result 
   
 if __name__ == "__main__" : 
-    a, b = float(getBitcoinPrice24Low()),float(getBitcoinPrice())
+    a, b = float(getCoinPriceLow()),float(getCoinPrice())
     PERCENTAGE = percent(a, b)
       
 #Check for file, if it doesn't exist create, otherwise read file
@@ -65,20 +83,21 @@ if file_exists:
     ObjRead = open(CURR_DIR + "previousprice", "r")
     PREVIOUS_PRICE = ObjRead.read();
     f = open(CURR_DIR + "previousprice", "w")
-    f.write(str(getBitcoinPrice()))
+    f.write(str(getCoinPrice()))
     ObjRead.close()
 else:
     #print ("price file not found")
     f = open(CURR_DIR + "previousprice", "w")
-    f.write(str(getBitcoinPrice()))
-    PREVIOUS_PRICE = str(getBitcoinPrice())
+    f.write(str(getCoinPrice()))
+    PREVIOUS_PRICE = float(getCoinPrice())
 
 # Get price and format
-BITCOINPRICE = float(getBitcoinPrice())
-NUMBER_WITH_COMMAS = "{:,}".format(BITCOINPRICE)
+COINPRICELOW = float(getCoinPriceLow())
+COINPRICE = float(getCoinPrice())
+NUMBER_WITH_COMMAS = "{:,}".format(COINPRICE)
 
 #Flip screen is true arguement passed
-if str(args) == "Namespace(flip='true')":
+if args.flip == "true":
     inky_display.h_flip = True
     inky_display.v_flip = True
 
@@ -87,17 +106,20 @@ BTCLOGO = RESOURCES + "btc.png"
 btcimg = Image.open(BTCLOGO)
 
 #Compare current and previous prices & build price to display
-if (float(BITCOINPRICE) >= float(PREVIOUS_PRICE)):
-    BITCOINPRICE = CURRENCYSYMBOL + NUMBER_WITH_COMMAS
+if (float(COINPRICE) >= float(PREVIOUS_PRICE)):
+    COINPRICE = CURRENCYSYMBOL + NUMBER_WITH_COMMAS
     ICON = RESOURCES + "icon-up.png"
     iconimg = Image.open(ICON)
 else:
-    BITCOINPRICE = "$" + NUMBER_WITH_COMMAS
+    COINPRICE = CURRENCYSYMBOL + NUMBER_WITH_COMMAS
     ICON = RESOURCES + "icon-down.png"
     iconimg = Image.open(ICON)
 
+print("The selected pair is " + COIN)
+print("The selected currency " + CURRENCYSYMBOL)
 print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
-print("The current price is " + str(CURRENCYSYMBOL) + str(NUMBER_WITH_COMMAS))
+print("The price was " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
+print("The current price is " + str(COINPRICE))
 
 # Create a new canvas to draw on
 img = Image.open(RESOURCES + "backdrop.png").resize(inky_display.resolution)
@@ -113,7 +135,7 @@ img.paste(btcimg, (25, 0))
 img.paste(iconimg, (150, 7))
 draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
 draw.text((80, 33), str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
-draw.text((20, 45), str(BITCOINPRICE), inky_display.RED, font=font)
+draw.text((30, 45), str(COINPRICE), inky_display.RED, font=font)
 draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
 
 
