@@ -42,6 +42,10 @@ elif CURRENCYEXTRACT == "USD":
     CURRENCYSYMBOL = "$"
 elif CURRENCYEXTRACT == "EUR":
     CURRENCYSYMBOL = "€"
+elif CURRENCYEXTRACT == "CAD":
+    CURRENCYSYMBOL = "$"
+elif CURRENCYEXTRACT == "AUD":
+    CURRENCYSYMBOL = "$"
 
 # Get current COIN price from Kraken API
 def getCoinPrice():
@@ -116,9 +120,10 @@ else:
     iconimg = Image.open(ICON)
 
 print("The selected pair is " + COIN)
-print("The selected currency " + CURRENCYSYMBOL)
+print("The selected currency " + CURRENCYSYMBOL + "(" + CURRENCYEXTRACT + ")")
 print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
-print("The price was " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
+print("The low price is " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
+print("The previous price is " + CURRENCYSYMBOL + PREVIOUS_PRICE)
 print("The current price is " + str(COINPRICE))
 
 # Create a new canvas to draw on
@@ -137,7 +142,6 @@ draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
 draw.text((80, 33), str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
 draw.text((30, 45), str(COINPRICE), inky_display.RED, font=font)
 draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
-
 
 # Display the text
 inky_display.set_image(img)
