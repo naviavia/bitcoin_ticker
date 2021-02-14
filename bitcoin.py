@@ -93,6 +93,13 @@ def getCoinPriceLow():
         print("API - ERROR")
     
 #Calculate the 24hour percentage change
+def percentUpDown():
+    if getCoinPrice() > getCoinPriceLow():
+        return "+"
+                
+if len(getError())==0:            
+    PERCENTUPDOWN = str(percentUpDown())
+
 def percent(a, b) : 
     result = int(((b - a) * 100) / a) 
     return result 
@@ -156,7 +163,7 @@ if len(getError())==0:
     if args.debug == "true":
         print("The selected pair is " + COIN)
         print("The selected currency " + CURRENCYSYMBOL + "(" + CURRENCYEXTRACT + ")")
-        print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
+        print("The price has changed " + PERCENTUPDOWN + str(PERCENTAGE) + "% in last 24h's")
         print("The low price is " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
         print("The previous price is " + CURRENCYSYMBOL + PREVIOUS_PRICE_COMMAS)
         print("The current price is " + CURRENCYSYMBOL + NUMBER_WITH_COMMAS)
@@ -177,7 +184,7 @@ if len(getError())==0:
     img.paste(btcimg, (25, 0)) 
     img.paste(iconimg, (150, 7))
     draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
-    draw.text((80, 33), str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
+    draw.text((80, 33), PERCENTUPDOWN + str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
     draw.text((30, 45), str(COINPRICE), inky_display.RED, font=font)
     draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
 else:
