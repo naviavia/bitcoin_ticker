@@ -18,6 +18,7 @@ RESOURCES = CURR_DIR + "resources/"
 TIME = datetime.datetime.now()
 COURIER_FONT = RESOURCES + "fonts/Courierprime.ttf"
 API_ENDPOINT = "https://api.kraken.com/0/public/Ticker"
+DP = "{:.2f}" #change the value for the required decimal places
 
 inky_display = InkyPHAT("red")
 inky_display.set_border(inky_display.WHITE)
@@ -25,7 +26,8 @@ inky_display.set_border(inky_display.WHITE)
 # Parsing flip arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--flip', '-f', type=str, help="true = screen is flipped")
-parser.add_argument('--pair', '-p', type=str, help="enter currency pair")
+parser.add_argument('--pair', '-p', type=str, help="Enter currency pair")
+parser.add_argument('--debug', '-d', type=str, help="true = enable debug")
 args, _ = parser.parse_known_args()
 
 #Select currency based on currency pair input
@@ -61,7 +63,7 @@ def getError():
     return (error)
   
 if len(getError())!=0:
-    print("Invalid coin pair")
+    print("Invalid coin pair: " + args.pair)
 
 # Get current COIN price from Kraken API
 def getCoinPrice():
@@ -71,7 +73,7 @@ def getCoinPrice():
         json_data = r.text
         fj = json.loads(json_data)
         lastpriceFloat = fj["result"][COIN]["c"][0]
-        return float(lastpriceFloat)
+        return DP.format(float(lastpriceFloat))
     except requests.ConnectionError:
         print("API - ERROR")
     
@@ -85,8 +87,8 @@ def getCoinPriceLow():
         else:
             json_data = r.text
             fj = json.loads(json_data)
-            lastpriceFloat = fj["result"][COIN]["l"][0]
-            return float(lastpriceFloat)
+            lowpriceFloat = fj["result"][COIN]["l"][0]
+            return DP.format(float(lowpriceFloat))
     except requests.ConnectionError:
         print("API - ERROR")
     
@@ -100,23 +102,28 @@ if len(getError())==0:
     PERCENTAGE = percent(a, b)
       
 #Check for file, if it doesn't exist create, otherwise read file
-    file_exists = os.path.isfile(CURR_DIR + "/" + "previousprice")
+file_exists = os.path.isfile(CURR_DIR + "/" + "previousprice")
+
+def updatePriceFile():
+    f = open(CURR_DIR + "/" + "previousprice", "w")
+    f.write(getCoinPrice())
+    return float(getCoinPrice())
     
 def previousPriceFile():
     if file_exists:
-        ObjRead = open(CURR_DIR + "previousprice", "r")
+        ObjRead = open(CURR_DIR + "/" + "previousprice", "r")
         return ObjRead.read();
-        f = open(CURR_DIR + "previousprice", "w")
-        f.write(str(getCoinPrice()))
         ObjRead.close()
     else:
-        print ("price file not found")
-        f = open(CURR_DIR + "previousprice", "w")
-        f.write(str(getCoinPrice()))
+        print("Price file not found")
+        f = open(CURR_DIR + "/" + "previousprice", "w")
+        f.write(getCoinPrice())
         return float(getCoinPrice())
-
+        
 if len(getError())==0: 
     PREVIOUS_PRICE = str(previousPriceFile())
+    PREVIOUS_PRICE_COMMAS = "{:,}".format(float(PREVIOUS_PRICE))
+    updatePriceFile()
     
 # Get price and format
 if len(getError())==0:
@@ -146,12 +153,15 @@ if len(getError())==0:
         iconimg = Image.open(ICON)
 
 if len(getError())==0:
-    print("The selected pair is " + COIN)
-    print("The selected currency " + CURRENCYSYMBOL + "(" + CURRENCYEXTRACT + ")")
-    print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
-    print("The low price is " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
-    print("The previous price is " + CURRENCYSYMBOL + PREVIOUS_PRICE)
-    print("The current price is " + str(COINPRICE))
+    if args.debug == "true":
+        print("The selected pair is " + COIN)
+        print("The selected currency " + CURRENCYSYMBOL + "(" + CURRENCYEXTRACT + ")")
+        print("The price has changed " + str(PERCENTAGE) + "% in last 24h's")
+        print("The low price is " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
+        print("The previous price is " + CURRENCYSYMBOL + PREVIOUS_PRICE_COMMAS)
+        print("The current price is " + CURRENCYSYMBOL + NUMBER_WITH_COMMAS)
+        print("The ICON is " + ICON)
+        
 
 # Create a new canvas to draw on
 img = Image.open(RESOURCES + "backdrop.png").resize(inky_display.resolution)
