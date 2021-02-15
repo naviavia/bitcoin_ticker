@@ -96,6 +96,8 @@ def getCoinPriceLow():
 def percentUpDown():
     if getCoinPrice() > getCoinPriceLow():
         return "+"
+    else:
+        return ""
                 
 if len(getError())==0:            
     PERCENTUPDOWN = str(percentUpDown())
