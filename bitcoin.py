@@ -87,7 +87,7 @@ def getCoinPriceLow():
         else:
             json_data = r.text
             fj = json.loads(json_data)
-            lowpriceFloat = fj["result"][COIN]["l"][0]
+            lowpriceFloat = fj["result"][COIN]["o"]
             return DP.format(float(lowpriceFloat))
     except requests.ConnectionError:
         print("API - ERROR")
