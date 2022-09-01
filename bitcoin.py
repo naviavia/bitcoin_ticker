@@ -1,7 +1,7 @@
-# /usr/bin/python3
 # bitcoin_ticker v1.2
 # Naviavia - https://github.com/naviavia/bitcoin_ticker
 #!/usr/bin/env python3
+
 import argparse
 import requests
 import json
