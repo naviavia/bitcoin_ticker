@@ -8,17 +8,17 @@ The bitcoin ticker has been configured with the Kraken API, and refreshes the sc
 
 
 ## Requirements
-- Raspberry Pi
+- Raspberry Pi (all models up to Pi Zero 2 Supported as of 08/2022)
 - Inky pHAT e-ink display
 
 ## Setup
-- SSH onto Pi
-- Install the Inky pHAT libary on the command line
+- SSH/HDMI onto Pi
+- Install the Inky pHAT library on the command line
 ```
 curl https://get.pimoroni.com/inky | bash
 ```
 - Reboot the Pi
-- Download the bitcoin_ticker code to any your home directory
+- Download the bitcoin_ticker code to a directory
 ```
 git clone https://github.com/naviavia/bitcoin_ticker.git
 ```
@@ -26,7 +26,7 @@ git clone https://github.com/naviavia/bitcoin_ticker.git
 ```
 crontab -e
 ```
-- Add the below entry (5 represents the frequency of the task e.g. updating to 1 will run every minute)
+- Add the below entry (5 represents the frequency of the task e.g. updating to 1 will run every minute, add running variables if required to switch currencies or keep the screen flipped)
 ```
 */5 * * * * python3 /home/pi/bitcoin_ticker/bitcoin.py
 ```
