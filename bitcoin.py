@@ -1,16 +1,16 @@
 # /usr/bin/python3
-# bitcoin_ticker v1.1
+# bitcoin_ticker v1.2
 # Naviavia - https://github.com/naviavia/bitcoin_ticker
-
+#!/usr/bin/env python3
+import argparse
 import requests
 import json
 from time import sleep
-from inky import InkyPHAT
-import argparse
-from PIL import Image, ImageFont, ImageDraw
+from inky.auto import auto
 import os
 from font_fredoka_one import FredokaOne
 import datetime
+from PIL import Image, ImageFont, ImageDraw
 
 #Variables
 CURR_DIR = os.path.dirname(os.path.realpath(__file__)) + "/"
@@ -20,7 +20,7 @@ COURIER_FONT = RESOURCES + "fonts/Courierprime.ttf"
 API_ENDPOINT = "https://api.kraken.com/0/public/Ticker"
 DP = "{:.2f}" #change the value for the required decimal places
 
-inky_display = InkyPHAT("red")
+inky_display = auto(ask_user=True, verbose=True)
 inky_display.set_border(inky_display.WHITE)
 
 # Parsing flip arguments
@@ -140,7 +140,7 @@ if len(getError())==0:
     COINPRICE = float(getCoinPrice())
     NUMBER_WITH_COMMAS = "{:,}".format(COINPRICE)
 
-#Flip screen is true arguement passed
+#Flip screen is true argument passed
 if args.flip == "true":
     inky_display.h_flip = True
     inky_display.v_flip = True
@@ -185,12 +185,12 @@ font3 = ImageFont.truetype(COURIER_FONT, 24)
 if len(getError())==0:
     img.paste(btcimg, (25, 0)) 
     img.paste(iconimg, (150, 7))
-    draw.text((72, 10), "Price", inky_display.BLACK, font=font3)
+    draw.text((72, 10), "Price Now", inky_display.BLACK, font=font3)
     draw.text((80, 33), PERCENTUPDOWN + str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
-    draw.text((30, 45), str(COINPRICE), inky_display.RED, font=font)
-    draw.text((37.5, 90), TIME.strftime('%d-%m-%Y %H:%M:%S'), inky_display.BLACK, font=font2)
+    draw.text((30, 45), str(COINPRICE), inky_display.BLACK, font=font)
+    draw.text((37.5, 90), TIME.strftime('%d-%m %H:%M:%S'), inky_display.BLACK, font=font2)
 else:
-    draw.text((20, 45), "INVALID PAIR", inky_display.RED, font=font3)
+    draw.text((20, 45), "INVALID PAIR", inky_display.BLACK, font=font3)
 
 # Display the text
 inky_display.set_image(img)
