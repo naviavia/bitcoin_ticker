@@ -95,9 +95,9 @@ def getCoinPriceLow():
 #Calculate the 24hour percentage change
 def percentUpDown():
     if getCoinPrice() > getCoinPriceLow():
-        return "+"
+        return "It's up "
     else:
-        return ""
+        return "It's down "
                 
 if len(getError())==0:            
     PERCENTUPDOWN = str(percentUpDown())
@@ -109,6 +109,7 @@ def percent(a, b) :
 if len(getError())==0: 
     a, b = float(getCoinPriceLow()),float(getCoinPrice())
     PERCENTAGE = percent(a, b)
+    PERCENTAGE_COMMAS = "{:,.4f}".format(PERCENTAGE)
       
 #Check for file, if it doesn't exist create, otherwise read file
 file_exists = os.path.isfile(CURR_DIR + "/" + "previousprice")
@@ -131,14 +132,18 @@ def previousPriceFile():
         
 if len(getError())==0: 
     PREVIOUS_PRICE = str(previousPriceFile())
-    PREVIOUS_PRICE_COMMAS = "{:,}".format(float(PREVIOUS_PRICE))
+    PREVIOUS_PRICE_COMMAS = "{:,.9f}".format(float(PREVIOUS_PRICE))
     updatePriceFile()
+#CALCULATE AND DISPLAY YOUR PERSONAL TOTAL 
+#if len(getError())==0:
+   BALANCE = (float(getCoinPrice()) * YOUR-BTC-TOTAL)
+   BALANCE_WITH_COMMAS = "{:,.2f}".format(BALANCE)
     
 # Get price and format
 if len(getError())==0:
     COINPRICELOW = float(getCoinPriceLow())
     COINPRICE = float(getCoinPrice())
-    NUMBER_WITH_COMMAS = "{:,}".format(COINPRICE)
+    NUMBER_WITH_COMMAS = "{:,.2f}".format(COINPRICE)
 
 #Flip screen is true argument passed
 if args.flip == "true":
@@ -149,6 +154,9 @@ if args.flip == "true":
 if len(getError())==0:
     BTCLOGO = RESOURCES + "btc.png"
     btcimg = Image.open(BTCLOGO)
+    
+if len(getError())==0:
+    BALANCE = CURRENCYSYMBOL + BALANCE_WITH_COMMAS
 
 #Compare current and previous prices & build price to display
 if len(getError())==0:
@@ -160,17 +168,18 @@ if len(getError())==0:
         COINPRICE = CURRENCYSYMBOL + NUMBER_WITH_COMMAS
         ICON = RESOURCES + "icon-down.png"
         iconimg = Image.open(ICON)
-
+        
+# TO SHOW YOUR BALANCE LAST PRINT LINE AND ADD YOUR BTC TOTAL ABOVE
 if len(getError())==0:
     if args.debug == "true":
         print("The selected pair is " + COIN)
         print("The selected currency " + CURRENCYSYMBOL + "(" + CURRENCYEXTRACT + ")")
-        print("The price has changed " + PERCENTUPDOWN + str(PERCENTAGE) + "% in last 24h's")
+        print("The price has changed " + PERCENTUPDOWN + str(PERCENTAGE_COMMAS) + "%")
         print("The low price is " + CURRENCYSYMBOL + "{:,}".format(COINPRICELOW))
         print("The previous price is " + CURRENCYSYMBOL + PREVIOUS_PRICE_COMMAS)
         print("The current price is " + CURRENCYSYMBOL + NUMBER_WITH_COMMAS)
         print("The ICON is " + ICON)
-        
+#        print("Your balance is " + CURRENCYSYMBOL + NUMBER_WITH_COMMAS)
 
 # Create a new canvas to draw on
 img = Image.open(RESOURCES + "backdrop.png").resize(inky_display.resolution)
@@ -182,13 +191,17 @@ font2 = ImageFont.truetype(COURIER_FONT, 12)
 font3 = ImageFont.truetype(COURIER_FONT, 24)
 
 # Text to display and location
+# TO SHOW YOUR BALANCE UNCOMMENT LAST 2 DRAW.TEXT LINES AND ADD YOUR BTC TOTAL ABOVE
 if len(getError())==0:
     img.paste(btcimg, (25, 0)) 
     img.paste(iconimg, (150, 7))
     draw.text((72, 10), "Price Now", inky_display.BLACK, font=font3)
-    draw.text((80, 33), PERCENTUPDOWN + str(PERCENTAGE) + "%" + "(24h)", inky_display.BLACK, font=font2)
+    draw.text((80, 33), PERCENTUPDOWN + str(PERCENTAGE_COMMAS) + "%", inky_display.BLACK, font=font2)
     draw.text((30, 45), str(COINPRICE), inky_display.BLACK, font=font)
     draw.text((37.5, 90), TIME.strftime('%d-%m %H:%M:%S'), inky_display.BLACK, font=font2)
+#    draw.text((37.5, 100), "Your Balance is", inky_display.BLACK, font=font2)
+#    draw.text((150, 100), str(BALANCE), inky_display.BLACK, font=font2)
+    
 else:
     draw.text((20, 45), "INVALID PAIR", inky_display.BLACK, font=font3)
 
